@@ -81,4 +81,6 @@ id_name=`perl -ne 'print "$1\n" if /v=(.*)/' youtube_tmp.txt`
   sed -e 's/%25/%/g' tmp6.txt| sed -e 's/%25/%/g' | sed -e 's/%3A/:/g' | sed -e 's/%2F/\//g' |sed -e 's/%3F/\?/g' | sed -e 's/%3D/=/g' | sed -e 's/%26/\&/g' > tmp7.txt
 
   wget -i tmp7.txt -O "${id_name}_${quality_name}.${extension_name}"
+  
+  rm tmp[2-6].txt
 
