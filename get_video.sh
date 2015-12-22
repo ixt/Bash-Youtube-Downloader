@@ -78,7 +78,7 @@ id_name=`perl -ne 'print "$1\n" if /v=(.*)/' youtube_tmp.txt`
   perl -pe 's/\n//g' tmp5.txt | sed -e 's/sig%3D/\&signature%3D/g' > tmp6.txt
   sed -i -e 's/url%3D//g' tmp6.txt
 #url decoding
-  sed -e 's/%25/%/g' tmp6.txt| sed -e 's/%25/%/g' | sed -e 's/%3A/:/g' | sed -e 's/%2F/\//g' |sed -e 's/%3F/\?/g' | sed -e 's/%3D/=/g' | sed -e 's/%26/\&/g' > tmp7.txt
+  cat tmp6.txt | sed -e 's/%25/%/g' -e 's/%25/%/g' -e 's/%3A/:/g' -e 's/%2F/\//g' -e 's/%3F/\?/g' -e 's/%3D/=/g' -e 's/%26/\&/g' > tmp7.txt
 
   wget -i tmp7.txt -O "${id_name}_${quality_name}.${extension_name}"
   
