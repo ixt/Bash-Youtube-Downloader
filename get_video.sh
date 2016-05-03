@@ -29,6 +29,27 @@
 
 
 declare -i line=0
+
+function select_option ()
+{
+  for i in `cat video_type_option.txt`
+  do
+    line=line+1
+    echo "${line}.$i"
+  done
+
+  echo "Which one ?"
+  read n
+
+  if [ "$n" -le "$line" ];
+  then
+   head -n "$n" tmp3.txt | tail -n 1 > tmp4.txt
+  else
+   echo "Input Error!!"
+   exit
+  fi
+}
+
 echo "$1" > youtube_tmp.txt
 id_name=`perl -ne 'print "$1\n" if /v=(.*)/' youtube_tmp.txt`
 
@@ -50,23 +71,8 @@ id_name=`perl -ne 'print "$1\n" if /v=(.*)/' youtube_tmp.txt`
   perl -ne 'print "$1,$2\n" if /video%252F(.*?)%.*quality%3D(.*?)(%|\n)/' tmp3.txt >> video_type_option.txt
   sed -i -e 's/x-flv/flv/g' video_type_option.txt
 
-  for i in `cat video_type_option.txt`
-  do
-    line=line+1
-    echo "${line}.$i"
-  done
-
-  echo "Which one ?"
-  read n
-
-  if [ "$n" -le "$line" ];
-  then
-   head -n "$n" tmp3.txt | tail -n 1 > tmp4.txt
-  else
-   echo "Input Error!!"
-   exit
-  fi
-
+  select_option
+  
 #set file extension name variable and video quality variable
   extension_name=`head -n "$n" video_type_option.txt | tail -n 1 | cut -d "," -f 1`
   quality_name=`head -n "$n" video_type_option.txt | tail -n 1 | cut -d "," -f 2`
