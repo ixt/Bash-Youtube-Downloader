@@ -53,11 +53,8 @@ echo "$1" > youtube_tmp.txt
 id_name=`perl -ne 'print "$1\n" if /v=(.*)/' youtube_tmp.txt`
 
   name="http://www.youtube.com/get_video_info?video_id=${id_name}"
+  wget "$name" -qO- |sed -e 's/&/\n/g' | grep 'url_encoded_fmt_stream_map' | sed -e 's/%2C/,/g' -e 's/,/\n/g' > tmp3.txt
 # cut and filter mp4 url
-  wget "$name" -qO- | sed -e 's/&/\n/g' -n -e 's/.*\(url_encoded_fmt_stream_map\).*/&/p' -e 's/%2C/,/g' -e 's/,/\n/g' > tmp3.txt
-
-  # sed -e 's/&/\n/g' .temp| grep 'url_encoded_fmt_stream_map'> tmp3.txt
-  # sed -i -e 's/%2C/,/g' -e 's/,/\n/g' tmp3.txt
 
 # print out total video format name and quality
   perl -ne 'print "$2,$1\n" if /quality%3D(.*?)%.*video%252F(.*?)(%|\n)/' tmp3.txt > video_type_option.txt
@@ -73,12 +70,11 @@ id_name=`perl -ne 'print "$1\n" if /v=(.*)/' youtube_tmp.txt`
   quality_name=`head -n "$n" video_type_option.txt | tail -n 1 | cut -d "," -f 2`
 
   sed -i -e 's/%26/\&/g' -e 's/&/\n/g' tmp4.txt
-  grep 'http' tmp4.txt > tmp5.txt
-  grep 'sig%3D' tmp4.txt >> tmp5.txt
-  perl -pe 's/\n//g' tmp5.txt | sed -e 's/sig%3D/\&signature%3D/g' > tmp6.txt
-  sed -i -e 's/url%3D//g' tmp6.txt
+  egrep 'http|sig%3D' tmp4.txt > tmp5.txt
 # url decoding
-  cat tmp6.txt | sed -e 's/%25/%/g' -e 's/%25/%/g' -e 's/%3A/:/g' -e 's/%2F/\//g' -e 's/%3F/\?/g' -e 's/%3D/=/g' -e 's/%26/\&/g' > tmp7.txt
+  perl -pe 's/\n//g' tmp5.txt |\
+      sed -e 's/sig%3D/\&signature%3D/g;s/url%3D//g;s/%25/%/g;s/%25/%/g;
+      s/%3A/:/g;s/%2F/\//g;s/%3F/\?/g;s/%3D/=/g;s/%26/\&/g' > tmp7.txt
 
   wget -i tmp7.txt -O "${id_name}_${quality_name}.${extension_name}"
 
