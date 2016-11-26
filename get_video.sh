@@ -38,6 +38,9 @@ while [ "$#" -gt 0 ]; do
             echo "$1" > .url
             id_name=`perl -ne 'print "$1\n" if /v=(.*)/' .url`
             ;;
+        -o) shift
+            outname="${1}"
+            ;;
         *) shift
             echo "Unknown $1"
             exit 0
@@ -101,6 +104,6 @@ function select_option ()
       s/%3A/:/g;s/%2F/\//g;s/%3F/\?/g;s/%3D/=/g;s/%26/\&/g' > .tmp6
 
 # download video file
-  wget -i .tmp6 -O "${id_name}_${quality_name}.${extension_name}" -q --show-progress
+  wget -i .tmp6 -O "${outname:-${id_name}_${quality_name}.${extension_name}}" -q --show-progress
 
   rm -f .tmp[4-6] .formats .url .furls
