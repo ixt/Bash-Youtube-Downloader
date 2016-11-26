@@ -5,8 +5,9 @@
 #
 # usage: ./get_video.sh https://www.youtube.com/watch?v=xxxxxxxxxx
 #
-# Rev 1.0
-# 2013/09/03
+# Rev 1.1a
+# 2016/11/26
+# Modified by NfN Orange <orange@ff4500.red>
 # Copyright 2013 Jacky Shih <iluaster@gmail.com>
 #
 # Licensed under the GNU General Public License, version 2.0 (GPLv2)
@@ -52,12 +53,11 @@ echo "$1" > youtube_tmp.txt
 id_name=`perl -ne 'print "$1\n" if /v=(.*)/' youtube_tmp.txt`
 
   name="http://www.youtube.com/get_video_info?video_id=${id_name}"
-  wget "$name" -O tmp2.txt
-
 # cut and filter mp4 url
-  cp "${id_name}_url.txt" tmp2.txt
-  sed -e 's/&/\n/g' tmp2.txt| grep 'url_encoded_fmt_stream_map'> tmp3.txt
-  sed -i -e 's/%2C/,/g' -e 's/,/\n/g' tmp3.txt
+  wget "$name" -qO- | sed -e 's/&/\n/g' -n -e 's/.*\(url_encoded_fmt_stream_map\).*/&/p' -e 's/%2C/,/g' -e 's/,/\n/g' > tmp3.txt
+
+  # sed -e 's/&/\n/g' .temp| grep 'url_encoded_fmt_stream_map'> tmp3.txt
+  # sed -i -e 's/%2C/,/g' -e 's/,/\n/g' tmp3.txt
 
 # print out total video format name and quality
   perl -ne 'print "$2,$1\n" if /quality%3D(.*?)%.*video%252F(.*?)(%|\n)/' tmp3.txt > video_type_option.txt
@@ -82,5 +82,5 @@ id_name=`perl -ne 'print "$1\n" if /v=(.*)/' youtube_tmp.txt`
 
   wget -i tmp7.txt -O "${id_name}_${quality_name}.${extension_name}"
 
-  rm -f tmp[2-7].txt
+  # rm -f tmp[2-7].txt
 
